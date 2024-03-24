@@ -1,5 +1,6 @@
-package br.com.duckstore.duckbuy.domain;
+package br.com.duckstore.duckbuy.domain.entity;
 
+import br.com.duckstore.duckbuy.domain.entity.CartItem;
 import jakarta.persistence.*;
 
 import java.util.HashSet;

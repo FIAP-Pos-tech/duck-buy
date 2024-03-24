@@ -1,4 +1,4 @@
-package br.com.duckstore.duckbuy.domain;
+package br.com.duckstore.duckbuy.domain.entity;
 
 import jakarta.persistence.*;
 
@@ -15,6 +15,13 @@ public class CartItem {
     @JoinColumn(name = "shopping_cart_id")
     private ShoppingCart shoppingCart;
 
+    public CartItem() {}
+
+    public CartItem(Long id, Long itemId, int quantity) {
+        this.id = id;
+        this.itemId = itemId;
+        this.quantity = quantity;
+    }
 
     public Long getId() {
         return id;

@@ -1,6 +1,8 @@
 package br.com.duckstore.duckbuy.controller;
 
-import br.com.duckstore.duckbuy.domain.CartItem;
+import br.com.duckstore.duckbuy.domain.request.CartItemRequest;
+import br.com.duckstore.duckbuy.domain.response.CartItemResponse;
+import br.com.duckstore.duckbuy.domain.response.ShoppingCartResponse;
 import br.com.duckstore.duckbuy.service.ShoppingCartService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,18 +19,18 @@ public class ShoppingCartController {
     }
 
     @PostMapping("/{cartId}/items")
-    public ResponseEntity<CartItem> addItem(@PathVariable Long cartId, @RequestBody CartItem item) {
-        return ResponseEntity.ok(shoppingCartService.addItem(cartId, item));
+    public ResponseEntity<CartItemResponse> addItem(@PathVariable Long cartId, @RequestBody CartItemRequest itemRequest) {
+        return ResponseEntity.ok(shoppingCartService.addItem(cartId, itemRequest));
     }
 
     @DeleteMapping("/{cartId}/items/{itemId}")
-    public ResponseEntity<Void> removeItem(@PathVariable Long cartId, @PathVariable Long itemId) {
+    public ResponseEntity<?> removeItem(@PathVariable Long cartId, @PathVariable Long itemId) {
         shoppingCartService.removeItem(cartId, itemId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{cartId}/items")
-    public ResponseEntity<Set<CartItem>> getItems(@PathVariable Long cartId) {
+    public ResponseEntity<Set<CartItemResponse>> getItems(@PathVariable Long cartId) {
         return ResponseEntity.ok(shoppingCartService.getItems(cartId));
     }
 }
