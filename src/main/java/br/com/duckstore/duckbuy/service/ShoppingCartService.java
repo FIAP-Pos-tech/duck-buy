@@ -6,6 +6,7 @@ import br.com.duckstore.duckbuy.domain.request.CartItemRequest;
 import br.com.duckstore.duckbuy.domain.response.CartItemResponse;
 import br.com.duckstore.duckbuy.domain.repository.CartItemRepository;
 import br.com.duckstore.duckbuy.domain.repository.ShoppingCartRepository;
+import br.com.duckstore.duckbuy.domain.response.ItemResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -24,22 +25,28 @@ public class ShoppingCartService {
         this.restTemplate = restTemplate;
     }
 
-
+/*
     public CartItemResponse addItemToCart(Long cartId, CartItemRequest cartItemRequest) {
 
         ShoppingCart cart = shoppingCartRepository.findById(cartId)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
 
-        CartItem item = new CartItem(null, cartItemRequest.itemId(), cartItemRequest.quantity());
+        String itemUrl = "http://localhost:8081/api/items" + cartItemRequest.itemId();
+        ItemResponse itemResponse = restTemplate.getForObject(itemUrl, ItemResponse.class);
+
+        if (itemResponse == null) {
+            throw new RuntimeException("Item not found");
+        }
+
+        CartItem item = new CartItem(null, itemResponse.getId(), cartItemRequest.quantity());
         item.setShoppingCart(cart);
 
         cart.getItems().add(item);
-
         shoppingCartRepository.save(cart);
 
         return new CartItemResponse(item.getId(), item.getItemId(), item.getQuantity());
     }
-
+ */
 
     public CartItemResponse addItem(Long cartId, CartItemRequest itemRequest) {
         ShoppingCart cart = shoppingCartRepository.findById(cartId).orElseThrow(() -> new RuntimeException("Cart not found"));
