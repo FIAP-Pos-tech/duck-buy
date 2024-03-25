@@ -1,14 +1,15 @@
 package br.com.duckstore.duckbuy.service;
 
+import br.com.duckstore.duckbuy.api.item.ItemClient;
+import br.com.duckstore.duckbuy.api.item.response.ItemResponse;
+import br.com.duckstore.duckbuy.api.item.response.ItemsResponse;
 import br.com.duckstore.duckbuy.domain.entity.CartItem;
 import br.com.duckstore.duckbuy.domain.entity.ShoppingCart;
-import br.com.duckstore.duckbuy.domain.request.CartItemRequest;
-import br.com.duckstore.duckbuy.domain.response.CartItemResponse;
 import br.com.duckstore.duckbuy.domain.repository.CartItemRepository;
 import br.com.duckstore.duckbuy.domain.repository.ShoppingCartRepository;
-import br.com.duckstore.duckbuy.domain.response.ItemResponse;
+import br.com.duckstore.duckbuy.domain.request.CartItemRequest;
+import br.com.duckstore.duckbuy.domain.response.CartItemResponse;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,27 +18,25 @@ import java.util.stream.Collectors;
 public class ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final CartItemRepository cartItemRepository;
-    private final RestTemplate restTemplate;
+    private final ItemClient itemClient;
 
-    public ShoppingCartService(ShoppingCartRepository shoppingCartRepository, CartItemRepository cartItemRepository, RestTemplate restTemplate) {
+    public ShoppingCartService(ShoppingCartRepository shoppingCartRepository, CartItemRepository cartItemRepository) {
         this.shoppingCartRepository = shoppingCartRepository;
         this.cartItemRepository = cartItemRepository;
-        this.restTemplate = restTemplate;
+        this.itemClient = new ItemClient("http://localhost:8081");
     }
 
-/*
-    public CartItemResponse addItemToCart(Long cartId, CartItemRequest cartItemRequest) {
 
+    public CartItemResponse addItemToCart(Long cartId, CartItemRequest cartItemRequest) {
         ShoppingCart cart = shoppingCartRepository.findById(cartId)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
 
-        String itemUrl = "http://localhost:8081/api/items" + cartItemRequest.itemId();
-        ItemResponse itemResponse = restTemplate.getForObject(itemUrl, ItemResponse.class);
+        ItemsResponse itemsResponse = itemClient.getItem(cartItemRequest.itemId());
 
-        if (itemResponse == null) {
+        if (itemsResponse == null || itemsResponse.getItems().isEmpty()) {
             throw new RuntimeException("Item not found");
         }
-
+        ItemResponse itemResponse = itemsResponse.getItems().get(0);
         CartItem item = new CartItem(null, itemResponse.getId(), cartItemRequest.quantity());
         item.setShoppingCart(cart);
 
@@ -46,7 +45,7 @@ public class ShoppingCartService {
 
         return new CartItemResponse(item.getId(), item.getItemId(), item.getQuantity());
     }
- */
+
 
     public CartItemResponse addItem(Long cartId, CartItemRequest itemRequest) {
         ShoppingCart cart = shoppingCartRepository.findById(cartId).orElseThrow(() -> new RuntimeException("Cart not found"));
