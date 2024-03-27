@@ -18,6 +18,11 @@ public class ShoppingCartController {
         this.shoppingCartService = shoppingCartService;
     }
 
+    @PostMapping
+    public ResponseEntity<ShoppingCartResponse> createCart() {
+        return ResponseEntity.ok(shoppingCartService.createCart());
+    }
+
     @PostMapping("/{cartId}/items")
     public ResponseEntity<CartItemResponse> addItem(@PathVariable Long cartId, @RequestBody CartItemRequest itemRequest) {
         return ResponseEntity.ok(shoppingCartService.addItem(cartId, itemRequest));

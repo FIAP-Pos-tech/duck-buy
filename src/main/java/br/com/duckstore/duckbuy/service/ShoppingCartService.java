@@ -9,8 +9,10 @@ import br.com.duckstore.duckbuy.domain.repository.CartItemRepository;
 import br.com.duckstore.duckbuy.domain.repository.ShoppingCartRepository;
 import br.com.duckstore.duckbuy.domain.request.CartItemRequest;
 import br.com.duckstore.duckbuy.domain.response.CartItemResponse;
+import br.com.duckstore.duckbuy.domain.response.ShoppingCartResponse;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,12 +28,11 @@ public class ShoppingCartService {
         this.itemClient = new ItemClient("http://localhost:8081");
     }
 
-
-    public CartItemResponse addItemToCart(Long cartId, CartItemRequest cartItemRequest) {
+    public CartItemResponse addItemToCart(String token, Long cartId, CartItemRequest cartItemRequest) {
         ShoppingCart cart = shoppingCartRepository.findById(cartId)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
 
-        ItemsResponse itemsResponse = itemClient.getItem(cartItemRequest.itemId());
+        ItemsResponse itemsResponse = itemClient.getItem(token, cartItemRequest.itemId());
 
         if (itemsResponse == null || itemsResponse.getItems().isEmpty()) {
             throw new RuntimeException("Item not found");
@@ -68,5 +69,11 @@ public class ShoppingCartService {
         return cart.getItems().stream()
                 .map(item -> new CartItemResponse(item.getId(), item.getItemId(), item.getQuantity()))
                 .collect(Collectors.toSet());
+    }
+
+    public ShoppingCartResponse createCart() {
+        ShoppingCart cart = new ShoppingCart();
+        ShoppingCart saved = shoppingCartRepository.save(cart);
+        return new ShoppingCartResponse(saved.getId(), new HashSet<>());
     }
 }

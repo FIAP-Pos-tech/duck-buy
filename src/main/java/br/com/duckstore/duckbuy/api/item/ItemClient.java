@@ -1,12 +1,13 @@
 package br.com.duckstore.duckbuy.api.item;
 
+import br.com.duckstore.duckbuy.api.auth.interceptor.BearerInterceptor;
 import br.com.duckstore.duckbuy.api.item.response.ItemsResponse;
 import br.com.duckstore.duckbuy.api.item.response.StockResponse;
 import feign.Feign;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 
-public class ItemClient implements ItemApi {
+public class ItemClient {
 
     private final String url;
 
@@ -14,26 +15,23 @@ public class ItemClient implements ItemApi {
         this.url = url;
     }
 
-    private ItemApi getClient() {
+    private ItemApi getClient(String token) {
         return Feign.builder()
                 .decoder(new JacksonDecoder())
                 .encoder(new JacksonEncoder())
+                .requestInterceptor(new BearerInterceptor(token))
                 .target(ItemApi.class, url);
     }
 
-
-    @Override
-    public ItemsResponse getItems(int page, int size) {
-        return getClient().getItems(page, size);
+    public ItemsResponse getItems(String token, int page, int size) {
+        return getClient(token).getItems(page, size);
     }
 
-    @Override
-    public ItemsResponse getItem(Long id) {
-        return getClient().getItem(id);
+    public ItemsResponse getItem(String token, Long id) {
+        return getClient(token).getItem(id);
     }
 
-    @Override
-    public StockResponse getStockByItem(Long itemId) {
-        return getClient().getStockByItem(itemId);
+    public StockResponse getStockByItem(String token, Long itemId) {
+        return getClient(token).getStockByItem(itemId);
     }
 }
